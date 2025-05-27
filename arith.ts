@@ -16,8 +16,8 @@ function typecheck(t: Term): Type {
     case "false":
       return { tag: "Boolean" };
     case "if":
-      // const condTy = typecheck(t.cond);
-      // if (condTy.tag !== "Boolean") throw "boolean expected";
+      const condTy = typecheck(t.cond);
+      if (condTy.tag !== "Boolean") throw "boolean expected";
       const thnTy = typecheck(t.thn);
       const elsTy = typecheck(t.els);
       if (thnTy.tag !== elsTy.tag) {
@@ -35,5 +35,5 @@ function typecheck(t: Term): Type {
   }
 }
 
-// console.log(parseArith("true ? true : false"));
-console.log(typecheck(parseArith("1 ? 1 : 2")));
+console.log(parseArith("(1 + true) ? 1 : 2"));
+console.log(typecheck(parseArith("(1 + true) ? 1 : 2")));
