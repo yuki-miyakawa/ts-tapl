@@ -44,7 +44,7 @@ function typeEq(ty1: Type, ty2: Type): boolean {
   }
 }
 
-function typecheck(t: Term, tyEnv: TypeEnv): Type {
+export function typecheck(t: Term, tyEnv: TypeEnv): Type {
   switch (t.tag) {
     case "true":
       return { tag: "Boolean" };
@@ -100,9 +100,18 @@ function typecheck(t: Term, tyEnv: TypeEnv): Type {
       }
       return funcTy.retType;
     }
-    default:
-      throw new Error("not implemented yet");
+    case "seq":
+      typecheck(t.body, tyEnv);
+      return typecheck(t.rest, tyEnv);
+    case "const": {
+      const ty = typecheck(t.init, tyEnv);
+      const newTyEnv = { ...tyEnv, [t.name]: ty };
+      return typecheck(t.rest, newTyEnv);
+    }
   }
 }
 
-console.log(typecheck(parseBasic("((x: number) => x)(true)"), {}));
+// console.log(parseBasic("const x = 1; x;"));
+console.log(parseBasic("const x = 1; x; \n const y = 2;"));
+
+// console.log(typecheck(parseBasic("((x: number) => x)(42)"), {}));
